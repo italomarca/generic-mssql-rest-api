@@ -10,7 +10,7 @@ const dbConfig = {
   server: '',  //Type server here
   database: '', //Type database here
   pool: {
-    max: 10,
+    max: 9,
     min: 0,
     idleTimeoutMillis: 5000
   }
