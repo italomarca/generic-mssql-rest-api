@@ -1,49 +1,29 @@
-var express = require('express')
-var app = express()
-//var https = require('https');
-var http = require('http');
-const sql = require('mssql')
+const db = require('./modules/db');
+const express = require('express');
 
-const dbConfig = {
-  user: '',   //Type user here
-  password: '', //Type password here
-  server: '',  //Type server here
-  database: '', //Type database here
-  pool: {
-    max: 9,
-    min: 0,
-    idleTimeoutMillis: 5000
-  }
-}
+var app = express();
 
-async function executeSql(query) {
-  const q = [query]
-  try {
-      const pool = await sql.connect(dbConfig)
-      const result = await sql.query(q)
-      sql.close()
-      return result
-  } catch (err) {
-      sql.close()
-      return err
-  }
-}
-
-
-app.get('/:table', function (req, res) {
-  executeSql('select * from ' + req.params.table)
-    .then( x => {
-      res.send(JSON.stringify(x))
-    })
-    .catch( err => {
-      res.send(JSON.stringify(err))
-      console.log(err);
-    })
+app.get('/', (req, res) => {
+  res.send('Server ok!');
 })
 
-//Future work
-//app.put('/:table', function (req, res) {
-//
-//});
+app.get('/:table', (req, res) => {
 
-http.createServer(app).listen(9099);
+  const table = req.params.table;
+  
+  if (table === 'favicon.ico') {
+    return;
+  }
+   
+  db.executeSql(`select * from ${table}`)
+    .then(result => res.status(200).json(result))
+    .catch(err => console.log(err))
+})
+
+app.put('/:table', (req, res) => {
+  res.send()
+});
+
+app.listen('3000', () => {
+  console.log('Listening on port 3000');
+})
